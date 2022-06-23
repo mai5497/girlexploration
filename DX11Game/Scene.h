@@ -1,0 +1,23 @@
+#ifndef __SCENE_H__
+#define __SCENE_H__
+
+#include "main.h"
+
+enum EScene {
+	SCENE_NONE = 0,	// 未設定
+	SCENE_TITLE,	// タイトル画面
+	SCENE_MODE,		// モード選択画面
+	SCENE_GAME,		// ゲーム画面
+
+	MAX_SCENE		// シーン総数
+};
+
+HRESULT InitScene();			// 初期化
+void UninitScene();				// 終了処理
+void UpdateScene();				// 更新
+void DrawScene();				// 描画
+
+void SetScene(EScene Escene);	// 切り替え
+int GetScene();					// シーン番号返す
+
+#endif
