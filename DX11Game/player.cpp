@@ -21,19 +21,20 @@
 
 
 //-------------------- 定数定義 --------------------
-#define PATH_PLAYERTEXTURE	(L"data/texture/player004.png")
-#define PLAYER_POS_X		(-450.0f)
+#define PATH_PLAYERTEXTURE	(L"data/texture/player004.png") // テクスチャパス
+#define PLAYER_POS_X		(-450.0f)						// プレイヤー初期座標
 #define PLAYER_POS_Y		(-150.0f)
-#define PLAYER_WIDTH		(112.0f)
+#define PLAYER_WIDTH		(112.0f)						// プレイヤー大きさ
 #define PLAYER_HEIGHT		(112.0f)
-#define PLAYER_COLLISION_W	(46.0f)
-#define PLAYER_COLLISION_H	(112.0f)
-#define PLAYER_SPEED_X		(3.0f)
-#define PLAYER_SPEED_Y		(5.0f)
-#define PLAYER_COUNT_X		(4)
-#define PLAYER_COUNT_Y		(5)
-#define GRAVITY				(0.2f)
-#define GLIDERGRAVITY		(0.15f)
+#define PLAYER_COLLISION_W	(46.0f)							// 当たり判定横幅
+#define PLAYER_COLLISION_H	(112.0f)						// 当たり判定高さ 
+#define PLAYER_SPEED_X		(3.0f)							// 縦移動スピード
+#define PLAYER_SPEED_Y		(5.0f)							// 横移動スピード
+#define PLAYER_COUNT_X		(4)								// 横分割数
+#define PLAYER_COUNT_Y		(5)								// 縦分割数
+#define GRAVITY				(0.2f)							// 重力
+#define GLIDERGRAVITY		(0.15f)							// 滑空中の重力
+#define WINDSPEED			(5.0f)							// 風上昇スピード
 
 
 //-------------------- 構造体定義 --------------------
@@ -132,11 +133,12 @@ void	UpdatePlayer() {
 		g_movepos.x = PLAYER_SPEED_X;
 	}
 	// ジャンプ
-	if (jumpFlg == false && GetKeyPress(VK_W)) {
+	if (jumpFlg == false && GetKeyPress(VK_W) && g_nWalk != 4) {
 		g_nWalk = 3;
 		g_nDir = 1;	// g_nDirで反転させるため、正の向きにしておく
 		g_movepos.y = PLAYER_SPEED_Y;
 		jumpFlg = true;
+		g_landFlag = false;
 	}
 
 	// ジャンプ中
@@ -221,48 +223,54 @@ void PlayerCollision() {
 			if (*map == 0) {	// 描画なし
 				continue;
 			}
-			if (*map == 6) {	// ゴール
+			if (6 < *map && *map < 11) {	//UI
 				continue;
 			}
 			checkPos.x = (float)(j * BG_WIDTH - SCREEN_WIDTH / 2 + BG_WIDTH / 2);
 			checkPos.y = (float)-(i * BG_HEIGHT - SCREEN_HEIGHT / 2);
 
-			if (CheckCollisionRect(XMFLOAT2(PLAYER_COLLISION_W, PLAYER_COLLISION_H), XMFLOAT2(BG_WIDTH, BG_HEIGHT), g_vPos, checkPos)) {
-				if (*map == 5 && !g_ClearFlg) { // クリアフラグがたったらスターコイン取れなくする
+			if (*map == 5 && !g_ClearFlg) { // クリアフラグがたったらスターコイン取れなくする
+				if (CheckCollisionRect(XMFLOAT2(PLAYER_COLLISION_W, PLAYER_COLLISION_H), XMFLOAT2(BG_WIDTH, BG_HEIGHT), g_vPos, checkPos)) {
 					DestroyFruit(map);
+				}
+				continue;
+			}
+			if (*map == 6 /* && !g_GameoverFlg */) {	// ゴール
+				//----- ゴール当たり判定 -----
+				checkPos = GetGoalpos();
+				if (CheckCollisionRect(XMFLOAT2(PLAYER_COLLISION_W, PLAYER_COLLISION_H), GetGoalsize(), g_vPos, checkPos)) {
+					g_ClearFlg = true;	// クリアフラグ立てる
+					if (GetKeyRelease(VK_RETURN)) {
+						SetScene(SCENE_MODE);
+					}
 					continue;
 				}
-				if (g_vPos.y < g_oldPos.y) { // 落下
+			}
+			if (*map == 11) {	// 風
+				//----- 風当たり判定 -----
+				if (CheckCollisionRect(XMFLOAT2(PLAYER_COLLISION_W, PLAYER_COLLISION_H), XMFLOAT2(WIND_WIDTH, WIND_HEIGHT), g_vPos, checkPos)) {
+					if (g_nWalk != 4) {
+						continue;
+					}
+					g_movepos.y = WINDSPEED;
+				}
+			}
+			if (CheckCollisionRectX(XMFLOAT2(PLAYER_COLLISION_W, PLAYER_COLLISION_H), XMFLOAT2(BG_WIDTH, BG_HEIGHT), g_vPos, checkPos)) {
+				//----- 足場に着地 -----
+				if (g_oldPos.y - (PLAYER_HEIGHT / 2.0f) >= checkPos.y + (BG_HEIGHT / 2.0f) &&
+					checkPos.y + (BG_HEIGHT / 2.0f) >= g_vPos.y - (PLAYER_HEIGHT / 2.0f)) {
 					g_movepos.y = 0.0f;
 					g_vPos.y = checkPos.y + PLAYER_HEIGHT / 2.0f + BG_HEIGHT / 2.0f;
 					jumpFlg = false;
 					g_landFlag = true;
 				}
-				if (g_vPos.y > g_oldPos.y) { // 上昇
-					g_vPos.y = checkPos.y - BG_HEIGHT / 2.0f - PLAYER_HEIGHT / 2.0f;
+				//----- ブロックに頭をぶつけた -----
+				if (g_oldPos.y + (PLAYER_HEIGHT / 2.0f) <= checkPos.y - (BG_HEIGHT / 2.0f)
+					&& checkPos.y - (BG_HEIGHT / 2.0f) <= g_vPos.y + (PLAYER_HEIGHT / 2.0f)) {
+					g_vPos.y = checkPos.y - PLAYER_HEIGHT / 2.0f - BG_HEIGHT / 2.0f;
 					g_movepos.y = 0.0f;
-				} 
+				}
 			}
-		}
-
-	}
-
-	//----- 風当たり判定 -----
-	checkPos = GetWindPos();
-	if (CheckCollisionRect(XMFLOAT2(PLAYER_COLLISION_W, PLAYER_COLLISION_H), XMFLOAT2(WIND_WIDTH, WIND_HEIGHT), g_vPos, checkPos)) {
-		if (g_nWalk != 4){
-			return;
-		}
-		g_movepos.y = WINDSPEED;
-	}
-
-	//----- ゴール当たり判定 -----
-	checkPos = GetGoalpos();
-	if (CheckCollisionRect(XMFLOAT2(PLAYER_COLLISION_W, PLAYER_COLLISION_H), GetGoalsize(), g_vPos, checkPos)) {
-		g_ClearFlg = true;	// クリアフラグ立てる
-		if (GetKeyRelease(VK_RETURN)) {
-			SetScene(SCENE_MODE);
-			return;
 		}
 	}
 }
