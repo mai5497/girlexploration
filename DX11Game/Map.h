@@ -8,6 +8,9 @@
 #define BG_WIDTH		(48)
 #define BG_HEIGHT		(48)
 
+#define WIND_WIDTH		(96.0f / 2)	// サイズ横
+#define WIND_HEIGHT		(192.0f)// サイズ縦
+
 
 //===========================
 //

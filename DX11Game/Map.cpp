@@ -33,10 +33,14 @@
 #define STAR_POS_X		(0.0f - SCREEN_WIDTH / 2 + STAR_WIDTH * MAX_STAR + STAR_WIDTH / 2 )
 #define STAR_POS_Y		(SCREEN_HEIGHT / 2 - STAR_HEIGHT / 2)
 
+#define WIND_COUNT		(2)	// ï™äÑêî
+
 enum TEX {
 	MAP = 0,
 	UI,
 	STAR,
+	WIND,
+	UI_GOAL,
 
 	MAX_TEXTURE
 };
@@ -53,6 +57,8 @@ static LPCWSTR g_pszTexFName[MAX_TEXTURE] = {
 	L"data/texture/mapchip000.png",
 	L"data/texture/mapchip001.png",
 	L"data/texture/mapchip002.png",
+	L"data/texture/wind1.png",
+	L"data/texture/UI.png",
 };
 
 static ID3D11ShaderResourceView *g_pTexture[MAX_TEXTURE];
@@ -67,18 +73,18 @@ static int g_nStageNum;
 int mapchip[MAX_STAGE][12][20] =
 {
 	{
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,6,0,0,},
-	{0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,4,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,},
-	{0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
-	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 6, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,11, 0, 0, 0, 5, 0,},
+	{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
+	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
 	},
 	{
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
@@ -175,6 +181,28 @@ void	DrawMap() {
 				DrawPolygon(pDC);
 				continue;
 			}
+
+			//--- UIï`âÊ ---
+			if (6 < mapchip[g_nStageNum][i][j] && mapchip[g_nStageNum][i][j] < 11) {
+
+				//g_sizeMAP = MakeFloat2(UI_WIDTH, UI_HEIGHT);
+				//g_sizeTexCoordMAP = MakeFloat2(1.0f / UI_COUNT_X, 1.0f);
+				//g_posTexCoordMAP = MakeFloat2(((mapchip[g_nStageNum][i][j] - 7 % UI_COUNT_X) / (float)UI_COUNT_X), 0.0f);
+				//DrawSpriteQuad(MakeFloat3(g_posMAP.x, g_posMAP.y - UI_DIFFERE / 2, 0.0f), g_sizeMAP, g_colorMAP, g_TextureMAP[UI], g_posTexCoordMAP, g_sizeTexCoordMAP, 0);		//éläpå`ï`âÊä÷êî
+				continue;
+			}
+
+			//--- ïóï`âÊ ---
+			if (mapchip[g_nStageNum][i][j] == 11) {
+				SetPolygonSize(WIND_WIDTH, WIND_HEIGHT);
+				SetPolygonFrameSize(1.0f / WIND_COUNT, 1.0f);
+				SetPolygonPos(g_pos.x, g_pos.y + WIND_HEIGHT / 2);
+				SetPolygonUV(1.0f / WIND_COUNT, 0.0f);
+				SetPolygonTexture(g_pTexture[WIND]);
+				DrawPolygon(pDC);
+				continue;
+			}
+
 			// É}ÉbÉvÇÃï`âÊ
 			SetPolygonSize(BG_WIDTH, BG_HEIGHT);
 			SetPolygonFrameSize(1.0f / MAP_COUNT_X, 1.0f);

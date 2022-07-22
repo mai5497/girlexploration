@@ -12,6 +12,7 @@
 //				ìñÇΩÇËîªíË
 //
 //====================================================================================
+// ãÈå`ècâ°óºï˚
 bool CheckCollisionRect(XMFLOAT2 Rect1Size, XMFLOAT2 Rect2Size, XMFLOAT2 Rect1Pos, XMFLOAT2 Rect2Pos) {
 	XMFLOAT2 halfSize1 = XMFLOAT2(Rect1Size.x / 2.0f, Rect1Size.y / 2.0f);
 	XMFLOAT2 halfSize2 = XMFLOAT2(Rect2Size.x / 2.0f, Rect2Size.y / 2.0f);
@@ -24,4 +25,17 @@ bool CheckCollisionRect(XMFLOAT2 Rect1Size, XMFLOAT2 Rect2Size, XMFLOAT2 Rect1Po
 		}
 	}
 	return false;
+}
+
+// ãÈå`â°ÇæÇØ
+bool CheckCollisionRectX(XMFLOAT2 Rect1Size, XMFLOAT2 Rect2Size, XMFLOAT2 Rect1Pos, XMFLOAT2 Rect2Pos) {
+	XMFLOAT2 halfSize1 = XMFLOAT2(Rect1Size.x / 2.0f, Rect1Size.y / 2.0f);
+	XMFLOAT2 halfSize2 = XMFLOAT2(Rect2Size.x / 2.0f, Rect2Size.y / 2.0f);
+
+	if (Rect2Pos.x - halfSize2.x < Rect1Pos.x + halfSize1.x && Rect1Pos.x - halfSize1.x < Rect2Pos.x + halfSize2.x) {
+		
+		return true;
+	}
+	return false;
+
 }

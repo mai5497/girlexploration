@@ -13,7 +13,7 @@
 #include "bg.h"
 #include "player.h"
 #include "Map.h"
-#include "wind.h"
+//#include "wind.h"
 #include "timer.h"
 #include "clear.h"
 
@@ -49,11 +49,11 @@ HRESULT	InitGame() {
 	}
 
 	// 風初期化
-	hr = InitWind();
-	if (FAILED(hr)) {
-		MessageBox(GetMainWnd(), _T("風初期化失敗"), NULL, MB_OK);
-		return hr;
-	}
+	//hr = InitWind();
+	//if (FAILED(hr)) {
+	//	MessageBox(GetMainWnd(), _T("風初期化失敗"), NULL, MB_OK);
+	//	return hr;
+	//}
 
 	// タイマー初期化
 	hr = InitTimer();
@@ -88,7 +88,7 @@ void UninitGame() {
 	UninitPlayer();
 
 	// 風の終了処理
-	UninitWind();
+	//UninitWind();
 
 	// タイマー終了処理
 	UninitTimer();
@@ -111,7 +111,7 @@ void	UpdateGame() {
 	UpdateMap();
 
 	// 風更新
-	UpdateWind();
+	//UpdateWind();
 
 	// プレイヤー更新
 	UpdatePlayer();
@@ -135,7 +135,7 @@ void DrawGame() {
 	DrawMap();
 
 	// 風描画
-	DrawWind();
+	//DrawWind();
 
 	// タイマー描画
 	DrawTimer();
