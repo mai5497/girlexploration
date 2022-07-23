@@ -6,6 +6,7 @@
 enum STAGE {
 	STAGE1 = 0,
 	STAGE2,
+	STAGE3,
 
 	MAX_STAGE
 };

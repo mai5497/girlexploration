@@ -39,7 +39,7 @@ HRESULT	InitSelect() {
 	ID3D11Device* pDevice = GetDevice();
 
 	g_posTexCoordSelect = 0.0f;
-	g_nStageNum = STAGE1;
+	g_nStageNum = STAGE3;
 
 	hr = CreateTextureFromFile(pDevice, PATH_SELECTTEXTURE, &g_pTexture);
 

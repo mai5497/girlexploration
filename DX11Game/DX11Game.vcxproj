@@ -187,7 +187,6 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="Title.h" />
-    <ClInclude Include="wind.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bg.cpp" />
@@ -209,7 +208,6 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="Title.cpp" />
-    <ClCompile Include="wind.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Pixel2D.hlsl">

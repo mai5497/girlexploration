@@ -295,6 +295,16 @@ void SetPolygonAngle(float fAngle)
 {
 	g_rotPolygon.z = fAngle;
 }
+
+void SetPolygonReversal() {
+	g_rotPolygon.y = -180.0f;
+}
+
+void UnSetPolygonReversal() {
+	g_rotPolygon.y = 0.0f;
+}
+
+
 //=============================================================================
 // 左上テクスチャ座標の設定 (0.0≦fU＜1.0, 0.0≦fV＜1.0)
 //=============================================================================

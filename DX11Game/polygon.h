@@ -17,6 +17,8 @@ void SetPolygonTexture(ID3D11ShaderResourceView* pTexture);
 void SetPolygonPos(float fX, float fY);
 void SetPolygonSize(float fScaleX, float fScaleY);
 void SetPolygonAngle(float fAngle);
+void SetPolygonReversal();
+void UnSetPolygonReversal();
 void SetPolygonUV(float fU, float fV);
 void SetPolygonFrameSize(float fWidth, float fHeight);
 void SetPolygonColor(float fRed, float fGreen, float fBlue);

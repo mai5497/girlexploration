@@ -14,7 +14,6 @@
 #include "Collision.h"
 #include "Map.h"
 #include "Field.h"
-#include "wind.h"
 #include "Scene.h"
 #include "clear.h"
 #include "timer.h"
@@ -133,7 +132,7 @@ void	UpdatePlayer() {
 		g_movepos.x = PLAYER_SPEED_X;
 	}
 	// ÉWÉÉÉìÉv
-	if (jumpFlg == false && GetKeyPress(VK_W) && g_nWalk != 4) {
+	if (jumpFlg == false && GetKeyPress(VK_SPACE) && g_nWalk != 4) {
 		g_nWalk = 3;
 		g_nDir = 1;	// g_nDirÇ≈îΩì]Ç≥ÇπÇÈÇΩÇﬂÅAê≥ÇÃå¸Ç´Ç…ÇµÇƒÇ®Ç≠
 		g_movepos.y = PLAYER_SPEED_Y;
@@ -197,6 +196,7 @@ void DrawPlayer() {
 	SetPolygonFrameSize(1.0f / PLAYER_COUNT_X , 1.0f /PLAYER_COUNT_Y );
 	SetPolygonUV((g_nAnimeFrame % PLAYER_COUNT_X) / (float)PLAYER_COUNT_X,
 				 (g_nAnimeFrame / PLAYER_COUNT_X) / (float)PLAYER_COUNT_Y);
+	//SetPolygonReversal();
 	DrawPolygon(pDC);
 
 	if (g_ClearFlg) {
@@ -204,6 +204,7 @@ void DrawPlayer() {
 	}
 
 	//å≥Ç…ñﬂÇ∑
+	UnSetPolygonReversal();
 	SetPolygonFrameSize(1.0f,1.0f);
 	SetPolygonUV(0.0f,0.0f);
 }
