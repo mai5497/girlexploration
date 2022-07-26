@@ -10,6 +10,7 @@
 #include "Texture.h"
 #include "debugproc.h"
 #include "Select.h"
+#include "timer.h"
 
 
 //-------------------- 定数定義 --------------------
@@ -69,6 +70,8 @@ XMFLOAT2 g_goalpos;
 float	 g_fAngle;				// ゴール角度
 static int g_nStarCnt;
 static int g_nStageNum;
+float g_fWindAlfa;
+int g_fWindAlfatime;
 
 int mapchip[MAX_STAGE][12][20] =
 {
@@ -133,7 +136,8 @@ HRESULT	InitMap() {
 	g_goalpos.y = 80.0f;
 	g_nStarCnt = MAX_STAR;
 	g_nStageNum = GetStageNum();
-
+	g_fWindAlfa = 0.0f;
+	g_fWindAlfatime = 0;
 	for (int i = 0; i < MAX_TEXTURE; i++) {
 		hr = CreateTextureFromFile(pDevice, g_pszTexFName[i], &g_pTexture[i]);
 		if (FAILED(hr)) {
@@ -169,6 +173,11 @@ void	UpdateMap() {
 	if (g_fAngle >= 180.0f) {
 		g_fAngle -= 360;
 	}
+
+	// 風のアルファ値
+	g_fWindAlfatime++;
+	g_fWindAlfa = sinf(g_fWindAlfatime*0.05);
+	
 }
 
 //====================================================================================
@@ -186,6 +195,7 @@ void	DrawMap() {
 			g_pos.y = -1.0f * (i * BG_HEIGHT - SCREEN_HEIGHT / 2 );
 			if (mapchip[g_nStageNum][i][j] == 6) {
 				// ゴールの描画
+				SetPolygonAlpha(1.0f);
 				SetPolygonSize(UI_WIDTH, UI_HEIGHT);
 				SetPolygonFrameSize(1.0f / UI_COUNT_X, 1.0f);
 				SetPolygonTexture(g_pTexture[UI]);
@@ -198,6 +208,7 @@ void	DrawMap() {
 
 			//--- UI描画 ---
 			if (6 < mapchip[g_nStageNum][i][j] && mapchip[g_nStageNum][i][j] < 11) {
+				SetPolygonAlpha(1.0f);
 				SetPolygonSize(UI_WIDTH, UI_HEIGHT);
 				SetPolygonFrameSize(1.0f / UI_COUNT_X, 1.0f);
 				SetPolygonTexture(g_pTexture[UI]);
@@ -211,6 +222,8 @@ void	DrawMap() {
 
 			//--- 風描画 ---
 			if (mapchip[g_nStageNum][i][j] == 11) {
+				SetPolygonAlpha(g_fWindAlfa);
+
 				SetPolygonSize(WIND_WIDTH, WIND_HEIGHT);
 				SetPolygonFrameSize(1.0f / WIND_COUNT, 1.0f);
 				SetPolygonPos(g_pos.x, g_pos.y + WIND_HEIGHT / 2);
@@ -221,6 +234,7 @@ void	DrawMap() {
 			}
 
 			// マップの描画
+			SetPolygonAlpha(1.0f);
 			SetPolygonSize(BG_WIDTH, BG_HEIGHT);
 			SetPolygonFrameSize(1.0f / MAP_COUNT_X, 1.0f);
 			SetPolygonTexture(g_pTexture[MAP]);
@@ -232,6 +246,7 @@ void	DrawMap() {
 	}
 
 	// スターコイン（仮名）取得描画
+	SetPolygonAlpha(1.0f);
 	SetPolygonSize(STAR_WIDTH, STAR_HEIGHT);
 	SetPolygonFrameSize(1.0f / STAR_COUNT_X, 1.0f);
 	SetPolygonTexture(g_pTexture[STAR]);
@@ -251,6 +266,7 @@ void	DrawMap() {
 	SetPolygonAngle(0.0f);
 	SetPolygonFrameSize(1.0f, 1.0f);
 	SetPolygonUV(0.0f, 0.0f);
+	SetPolygonAlpha(1.0f);
 }
 
 

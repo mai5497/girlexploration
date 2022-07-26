@@ -59,11 +59,11 @@ XMFLOAT2 g_movepos;
 static int g_nAnimeFrame;	// 表示枠ナンバー
 static int g_nFrameCount;	// 表示フレーム数
 static int g_nAnimPat;		// パターンナンバー
-static int g_nDir;			// 方向（-1；左、1：右）
 static int g_nWalk;			// 0:停止、1：移動 2:ダッシュ
 static bool jumpFlg;
 static bool g_landFlag;
 static bool g_ClearFlg;
+static bool g_bDir;			// 方向（true反転あり、false反転無し）
 
 //-------------------- プロトタイプ宣言 --------------------
 void PlayerCollision();
@@ -87,7 +87,7 @@ HRESULT	InitPlayer() {
 	g_vPos.y = PLAYER_POS_Y;
 	g_oldPos = g_vPos;
 	g_nAnimPat = 0;
-	g_nDir = 1;
+	g_bDir = false;
 	g_nWalk = 0;
 	g_nAnimeFrame = g_animePat[g_nWalk][g_nAnimPat].nFrame;
 	g_nFrameCount = g_animePat[g_nWalk][g_nAnimPat].nCount;
@@ -116,25 +116,25 @@ void UninitPlayer() {
 void	UpdatePlayer() {
 	//移動
 	g_nWalk = 0;		
-	g_nDir = 1;
+	g_bDir = false;
 	g_movepos.x = 0.0f;
 
 	// 左移動
 	if(GetKeyPress(VK_A)){
 		g_nWalk = 1;
-		g_nDir = -1;//左
+		g_bDir = true;//左
 		g_movepos.x = -PLAYER_SPEED_X;
 	}
 	// 右移動
 	if (GetKeyPress(VK_D)) {
 		g_nWalk = 1;
-		g_nDir = 1;//右
+		g_bDir = false;//右
 		g_movepos.x = PLAYER_SPEED_X;
 	}
 	// ジャンプ
 	if (jumpFlg == false && GetKeyPress(VK_SPACE) && g_nWalk != 4) {
 		g_nWalk = 3;
-		g_nDir = 1;	// g_nDirで反転させるため、正の向きにしておく
+		g_bDir = true;	// g_nDirで反転させるため、正の向きにしておく
 		g_movepos.y = PLAYER_SPEED_Y;
 		jumpFlg = true;
 		g_landFlag = false;
@@ -196,7 +196,12 @@ void DrawPlayer() {
 	SetPolygonFrameSize(1.0f / PLAYER_COUNT_X , 1.0f /PLAYER_COUNT_Y );
 	SetPolygonUV((g_nAnimeFrame % PLAYER_COUNT_X) / (float)PLAYER_COUNT_X,
 				 (g_nAnimeFrame / PLAYER_COUNT_X) / (float)PLAYER_COUNT_Y);
-	//SetPolygonReversal();
+	if (g_bDir) {
+		SetPolygonReversal();
+	} else {
+		UnSetPolygonReversal();
+	}
+
 	DrawPolygon(pDC);
 
 	if (g_ClearFlg) {
